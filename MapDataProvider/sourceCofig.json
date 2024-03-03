@@ -1,0 +1,42 @@
+{
+  "sources": [
+    {
+      "name": "DeepState",
+      "web-site": "https://deepstatemap.live",
+      "api-url": [
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/DeepState/last.geo.json"
+      ]
+    },
+    {
+      "name": "SaveEcoBot",
+      "web-site": "https://www.saveecobot.com/fire-maps#6/48.879/31.113/none/ara+arc+cuc+crc",
+      "api-url": [
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/SaveEcoBot/polygon_isw_territories.json"
+      ]
+    },
+    {
+      "name": "CyberBoroshno",
+      "web-site": "https://cyber-boroshno.com.ua/",
+      "api-url": [
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/CyberBoroshno/new.json?date=",
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/CyberBoroshno/old.json?date=",
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/CyberBoroshno/liberated.json?date=",
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/CyberBoroshno/confirmed.json?date="
+      ]
+    },
+    {
+      "name": "LiveMap",
+      "web-site": "https://liveuamap.com/",
+      "api-url": [
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/LiveMap/polygon_captured_territories.json"
+      ]
+    },
+    {
+      "name": "Noelreports",
+      "web-site": "https://noelreports.com/",
+      "api-url": [
+        "https://raw.githubusercontent.com/DBubnovskyi/FrontLineMap/main/DemoMap/DemoMap/DemoDataSource/Noelreports/smjsonLocal.json"
+      ]
+    }
+  ]
+}
