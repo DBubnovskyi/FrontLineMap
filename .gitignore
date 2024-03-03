@@ -1,0 +1,8 @@
+.vs/
+.vscode/
+DemoMap/DemoMap/bin/
+DemoMap/DemoMap/obj/
+DemoMap/packages/
+MapDataProvider/bin/
+MapDataProvider/obj/
+packages/
