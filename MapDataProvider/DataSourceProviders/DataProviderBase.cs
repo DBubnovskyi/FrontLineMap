@@ -1,23 +1,23 @@
 ﻿using MapDataProvider.DataConverters.Contracts;
-using MapDataProvider.DataSourceProvoders.Contracts;
-using MapDataProvider.Healpers;
+using MapDataProvider.DataSourceProviders.Contracts;
+using MapDataProvider.Helpers;
 using MapDataProvider.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MapDataProvider.DataSourceProvoders.Providers
+namespace MapDataProvider.DataSourceProviders.Providers
 {
     internal abstract class DataProviderBase : IDataProvider
     {
-        public DataProviderBase(IDataConverter converter, string name, string webSite, params string[] apiUrls)
-            : this(converter, name, webSite, apiUrls.ToList()) { }
-        public DataProviderBase(IDataConverter converter, string name, string webSite, List<string> apiUrls)
+        public DataProviderBase(IDataConverter converter, string name, string WebSite, params string[] apiUrls)
+            : this(converter, name, WebSite, apiUrls.ToList()) { }
+        public DataProviderBase(IDataConverter converter, string name, string Website, List<string> apiUrls)
         {
             Converter = converter;
             Name = name;
-            WebSite = webSite;
+            WebSite = Website;
             ApiUrls = apiUrls;
         }
 
@@ -26,19 +26,36 @@ namespace MapDataProvider.DataSourceProvoders.Providers
         public string Name { get;}
         public string WebSite { get;}
 
-        public virtual Task<MapDataCollection> GetDataAsync()
+
+        public virtual Task<MapDataCollection> GetDataAsync(bool reloadData = false, int expireTime = 10)
         {
             var res = new MapDataCollection();
-            try
+            if (reloadData || CacheHandler.IsExpired(Name, expireTime))
             {
-                var json = WebLoader.Load(ApiUrls.First());
-                res = Converter.ConvertMapData(json);
+                try
+                {
+                    var json = WebLoader.Load(ApiUrls.First());
+                    res = Converter.DeserializeMapData(json);
+                }
+                catch (Exception ex)
+                {
+                    res.Metadata.Errors.Add(ex);
+                }
+                res.Metadata.ActualSource = Metadata.ActualLoadSource.Api;
+                res.Metadata.LastUpdated = DateTime.Now;
+                CacheHandler.UpdateCache(Name, res);
             }
-            catch(Exception ex)
+            else
             {
-                res.Errors.Add(ex);
+                res = CacheHandler.LoadFromCache(Name);
             }
+
             return Task.FromResult(res);
         }
+        public virtual Task<MapDataCollection> GetDataAsync() => GetDataAsync(false, 10);
+
+        public virtual Task<MapDataCollection> GetDataAsync(bool reloadData) => GetDataAsync(reloadData, 10);
+
+        public virtual Task<MapDataCollection> GetDataAsync(int expireTime) => GetDataAsync(false, expireTime);
     }
 }

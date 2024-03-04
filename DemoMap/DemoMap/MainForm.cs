@@ -8,7 +8,7 @@ using MapDataProvider;
 using GMap.NET.WindowsForms;
 using System.Drawing.Imaging;
 using System.Linq;
-using MapDataProvider.DataSourceProvoders.Contracts;
+using MapDataProvider.DataSourceProviders.Contracts;
 using System.Threading.Tasks;
 
 namespace DemoMap
@@ -31,7 +31,7 @@ namespace DemoMap
             var configs = _dataProvider.Providers;
             gMapControl.MapProvider = GMapProviders.List[4];
             GMaps.Instance.Mode = AccessMode.ServerOnly;
-            gMapControl.SetPositionByKeywords("Kyiv, Ukrane");
+            gMapControl.SetPositionByKeywords("Kyiv, Ukraine");
             gMapControl.Position = new PointLatLng(49.0, 32.0);
             gMapControl.MinZoom = 0;
             gMapControl.MaxZoom = 22;
@@ -60,13 +60,14 @@ namespace DemoMap
 
             listBox1.Items.AddRange(_dataProvider.Providers.Select(x => (object)x.Name).ToArray());
             //listBox1.SelectedIndex = 0;
-            DrawSource(_dataProvider.Providers[4]);
+            DrawSource(_dataProvider.Providers[0]);
+            listBox1.SelectedIndex = 0;
         }
 
-        private void DrawSource(IDataProvider source)
+        private void DrawSource(IDataProvider source, bool isForce = false)
         {
-            var result = source.GetDataAsync().Result;
-            labelErr.Text = result.Errors.Count > 0 ? "Error occurred" : string.Empty;
+            var result = source.GetDataAsync(isForce).Result;
+            labelErr.Text = result.Metadata.Errors.Count > 0 ? "Error occurred" : string.Empty;
             _polyOverlay.Clear();
             gMapControl.Overlays.Clear();
             foreach (var polygon in result.Polygons)
@@ -76,9 +77,11 @@ namespace DemoMap
                 {
                     points.Add(new PointLatLng(point.Lat, point.Lng));
                 }
-                GMapPolygon gPolygon = new GMapPolygon(points, polygon.Name);
-                gPolygon.Fill = polygon.Style.Fill;
-                gPolygon.Stroke = polygon.Style.Stroke;
+                GMapPolygon gPolygon = new GMapPolygon(points, polygon.Name)
+                {
+                    Fill = polygon.Style.Fill,
+                    Stroke = polygon.Style.Stroke
+                };
 
                 _polyOverlay.Polygons.Add(gPolygon);
             }
@@ -95,6 +98,9 @@ namespace DemoMap
                 _polyOverlay.Routes.Add(gMapRoute);
             }
             linkLabel1.Text = source.WebSite.Length < 26 ? source.WebSite : source.WebSite.Substring(0, 23);
+            labelLastUpdate.Text = result.Metadata.LastUpdated != null ? result.Metadata.LastUpdated.Value.ToString("dd.MM.yyyy  -  HH:mm:ss") : " ";
+            labelDataSource.Text = result.Metadata.ActualSource == MapDataProvider.Models.Metadata.ActualLoadSource.LocalFile ?
+                "завантажено з кешу" : "завантажено з інтернету";
             _url = source.WebSite;
             gMapControl.Overlays.Add(_polyOverlay);
         }
@@ -214,6 +220,15 @@ namespace DemoMap
         private void MainForm_Load(object sender, EventArgs e)
         {
             _loader.Hide();
+        }
+
+        private void buttonUpdate_Click(object sender, EventArgs e)
+        {
+            listBox1.Enabled = false;
+            gMapControl.Enabled = false;
+            DrawSource(_dataProvider.Providers[listBox1.SelectedIndex], true);
+            gMapControl.Enabled = true;
+            listBox1.Enabled = true;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using MapDataProvider.DataConverters.Contracts;
 using MapDataProvider.DataSource;
-using MapDataProvider.DataSourceProvoders.Models.DeepState;
+using MapDataProvider.DataSourceProviders.Models.DeepState;
 using MapDataProvider.Models;
 using MapDataProvider.Models.MapElement;
 using System.Drawing;
@@ -9,17 +9,19 @@ namespace MapDataProvider.DataConverters
 {
     internal class LiveMapConverter : IDataConverter
     {
-        public MapDataCollection ConvertMapData(string jsonInput)
+        public MapDataCollection DeserializeMapData(string jsonInput)
         {
             var data = LiveMapModel.Deserialize(jsonInput);
-            var result = new MapDataCollection();
-            result.Name = nameof(DeepStateDataModel);
+            var result = new MapDataCollection
+            {
+                Name = nameof(DeepStateDataModel)
+            };
 
             foreach (var item in data.Polygons.Features)
             {
                 Color color = ColorTranslator.FromHtml("#ff5252");
                 var fill = new SolidBrush(Color.FromArgb(90, color));
-                var stroke = new Pen(Color.FromArgb(128, color), 1);
+                var stroke = new Pen(Color.FromArgb(128, color), 1) { DashPattern = new float[] {10} };
 
                 Style style = new Style()
                 {

@@ -1,5 +1,5 @@
 ﻿using MapDataProvider.DataConverters;
-using MapDataProvider.DataSourceProvoders.Providers;
+using MapDataProvider.DataSourceProviders.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +10,9 @@ namespace MapDataProvider.DataSourceProviders
 {
     internal class NoelreportsProvider : DataProviderBase
     {
-        public NoelreportsProvider(NoelreportsConverter converter, string name, string webSite, params string[] apiUrls)
-            : this(converter, name, webSite, apiUrls.ToList()) { }
-        public NoelreportsProvider(NoelreportsConverter converter, string name, string webSite, List<string> apiUrls) : base(converter, name, webSite, apiUrls)
-        {
-        }
+        public NoelreportsProvider(NoelreportsConverter converter, string name, string WebSite, params string[] apiUrls)
+            : this(converter, name, WebSite, apiUrls.ToList()) { }
+        public NoelreportsProvider(NoelreportsConverter converter, string name, string WebSite, List<string> apiUrls) 
+            : base(converter, name, WebSite, apiUrls) {}
     }
 }

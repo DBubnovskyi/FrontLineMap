@@ -6,11 +6,13 @@ namespace MapDataProvider.DataConverters
 {
     internal class CyberBoroshnoConverter : IDataConverter
     {
-        public MapDataCollection ConvertMapData(string jsonInput)
+        public MapDataCollection DeserializeMapData(string jsonInput)
         {
             var data = CyberBoroshnoModel.Deserialize(jsonInput);
-            var result = new MapDataCollection();
-            result.Name = nameof(CyberBoroshnoModel);
+            var result = new MapDataCollection
+            {
+                Name = nameof(CyberBoroshnoModel)
+            };
 
             foreach (var item in data.Features)
             {

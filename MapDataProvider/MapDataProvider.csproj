@@ -49,7 +49,8 @@
   <ItemGroup>
     <Compile Include="DataConverters\NoelreportsConverter.cs" />
     <Compile Include="DataSourceProviders\NoelreportsProvider.cs" />
-    <Compile Include="Healpers\FileReader.cs" />
+    <Compile Include="Helpers\CacheHandler.cs" />
+    <Compile Include="Helpers\FileReader.cs" />
     <Compile Include="Models\Config.cs" />
     <Compile Include="Models\DataModels\NoelreportsModel.cs" />
     <Compile Include="Models\IDataConverter.cs" />
@@ -68,7 +69,8 @@
     <Compile Include="Models\DataModels\DeepStateModel.cs" />
     <Compile Include="Models\DataModels\LiveMapModel.cs" />
     <Compile Include="Models\DataModels\SaveEcoBotModel.cs" />
-    <Compile Include="Healpers\WebLoader.cs" />
+    <Compile Include="Helpers\WebLoader.cs" />
+    <Compile Include="Models\ISource.cs" />
     <Compile Include="Models\MapDataCollection.cs" />
     <Compile Include="Models\MapElement\BaseElement.cs" />
     <Compile Include="Models\MapElement\IElement.cs" />
@@ -77,12 +79,14 @@
     <Compile Include="Models\MapElement\Polygon.cs" />
     <Compile Include="Models\MapElement\Style.cs" />
     <Compile Include="DataProvider.cs" />
+    <Compile Include="Models\Metadata.cs" />
+    <Compile Include="Models\Source.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="sourceCofig.json">
+    <EmbeddedResource Include="source.config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
