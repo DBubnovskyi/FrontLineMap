@@ -11,10 +11,13 @@ namespace MapDataProvider.DataSource
         {
             foreach(var item in model.OverlaysData)
             {
-                foreach (var polygon in item.Polygons)
+                if (item.Polygons != null)
                 {
-                    var style = model.Styles.FirstOrDefault(x => x.Id == polygon.StyleId);
-                    polygon.Style = style;
+                    foreach (var polygon in item.Polygons)
+                    {
+                        var style = model.Styles.FirstOrDefault(x => x.Id == polygon.StyleId);
+                        polygon.Style = style;
+                    }
                 }
             }
             return model;

@@ -1,5 +1,5 @@
 ﻿using MapDataProvider.DataConverters.Contracts;
-using MapDataProvider.DataSourceProvoders.Models.DeepState;
+using MapDataProvider.DataSourceProviders.Models.DeepState;
 using MapDataProvider.Models;
 using MapDataProvider.Models.MapElement;
 using System.Drawing;
@@ -9,10 +9,12 @@ namespace MapDataProvider.DataConverters
 {
     internal class DeepStateConverter : IDataConverter
     {
-        public MapDataCollection ConvertMapData(string jsonInput)
+        public MapDataCollection DeserializeMapData(string jsonInput)
         {
-            var result = new MapDataCollection();
-            result.Name = nameof(DeepStateDataModel);
+            var result = new MapDataCollection
+            {
+                Name = nameof(DeepStateDataModel)
+            };
             var model = DeepStateDataModel.Deserialize(jsonInput);
 
             foreach (var item in model.Features.Where(x => x.Geometry.Type == "Polygon"))
@@ -24,7 +26,7 @@ namespace MapDataProvider.DataConverters
                 int strokeOpacity = (int)(255.0 * item.Properties.StrokeOpacity ?? 1);
                 Color strokeColor = ColorTranslator.FromHtml(item.Properties.Stroke);
                 float strokeWidth = (float)(item.Properties.StrokeWidth ?? 1);
-                var stroke = new Pen(Color.FromArgb(strokeOpacity, strokeColor), strokeWidth);
+                var stroke = new Pen(Color.FromArgb(strokeOpacity, strokeColor), strokeWidth) { DashPattern = new float[] { 10 } };
 
                 Style style = new Style()
                 {

@@ -9,11 +9,13 @@ namespace MapDataProvider.DataConverters
 {
     internal class SaveEcoBotConverter : IDataConverter
     {
-        public MapDataCollection ConvertMapData(string jsonInput)
+        public MapDataCollection DeserializeMapData(string jsonInput)
         {
             var data = SaveEcoBotModel.Deserialize(jsonInput);
-            var result = new MapDataCollection();
-            result.Name = nameof(SaveEcoBotConverter);
+            var result = new MapDataCollection
+            {
+                Name = nameof(SaveEcoBotConverter)
+            };
 
             List<SaveEcoBotModel.Element> elements = new List<SaveEcoBotModel.Element>
             {

@@ -1,14 +1,14 @@
-﻿using MapDataProvider.Models;
+﻿using System;
 using System.IO;
 using System.Reflection;
-using System;
 using Newtonsoft.Json;
+using MapDataProvider.Models;
 
-namespace MapDataProvider.Healpers
+namespace MapDataProvider.Helpers
 {
     internal static class FileReader
     {
-        private static string _configFile = "sourceCofig.json";
+        private static readonly string _configFile = "source.config.json";
         private static string _assemblyDirectoryBuf;
         internal static string AssemblyDirectory
         {
@@ -27,8 +27,13 @@ namespace MapDataProvider.Healpers
 
         internal static Config ReadConfig()
         {
-            string json = File.ReadAllText($"{AssemblyDirectory}/{_configFile}");
-            return JsonConvert.DeserializeObject<Config>(json);
+            string configFile = $"{AssemblyDirectory}/{_configFile}";
+            if (File.Exists(configFile))
+            {
+                string json = File.ReadAllText(configFile);
+                return JsonConvert.DeserializeObject<Config>(json);
+            }
+            return null;
         }
     }
 }

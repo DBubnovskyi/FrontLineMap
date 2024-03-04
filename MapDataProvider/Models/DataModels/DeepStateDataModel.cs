@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MapDataProvider.DataSourceProvoders.Models.DeepState
+namespace MapDataProvider.DataSourceProviders.Models.DeepState
 {
     internal class DeepStateDataModel
     {
