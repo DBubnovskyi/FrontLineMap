@@ -10,18 +10,23 @@ using System.Drawing.Imaging;
 using System.Linq;
 using MapDataProvider.DataSourceProviders.Contracts;
 using System.Threading.Tasks;
+using GMap.NET.WindowsPresentation;
+using DemoMap.Cache;
+using GMapRoute = GMap.NET.WindowsForms.GMapRoute;
+using GMapPolygon = GMap.NET.WindowsForms.GMapPolygon;
+using TilePrefetcher = GMap.NET.TilePrefetcher;
 
 namespace DemoMap
 {
     public partial class MainForm : Form
     {
-        Size _panelSize = new Size();
+        readonly Size _panelSize = new Size();
         bool _panel = false;
         bool _isNightMode = false;
-        bool _currentMode = false;
+        private bool _currentMode = false;
         string _url = string.Empty;
-        DataProvider _dataProvider = new DataProvider();
-        LoadingForm _loader = new LoadingForm();
+        readonly DataProvider _dataProvider = new DataProvider();
+        readonly LoadingForm _loader = new LoadingForm();
 
         GMapOverlay _polyOverlay = new GMapOverlay("polygons");
         public MainForm()
@@ -30,8 +35,9 @@ namespace DemoMap
             InitializeComponent();
             var configs = _dataProvider.Providers;
             gMapControl.MapProvider = GMapProviders.List[4];
-            GMaps.Instance.Mode = AccessMode.ServerOnly;
+            GMaps.Instance.Mode = AccessMode.ServerAndCache;
             gMapControl.SetPositionByKeywords("Kyiv, Ukraine");
+            gMapControl.CacheLocation = $"{MapDataProvider.Helpers.FileReader.AssemblyDirectory}/Cache/Map/";
             gMapControl.Position = new PointLatLng(49.0, 32.0);
             gMapControl.MinZoom = 0;
             gMapControl.MaxZoom = 22;
@@ -42,10 +48,10 @@ namespace DemoMap
             gMapControl.OnMapZoomChanged += OnZoomChanged;
             matrixDefault = gMapControl.ColorMatrix;
             gMapControl.EmptyMapBackground = Color.Gray;
-
+            panel2.Hide();
+            gMapControl.MouseUp += OnMouseUp;
             OnMapDrag();
             OnZoomChanged();
-
 
             SetMode(IsNight());
 
@@ -105,7 +111,7 @@ namespace DemoMap
             gMapControl.Overlays.Add(_polyOverlay);
         }
 
-        ColorMatrix matrixGray = new ColorMatrix(new float[][]
+        readonly ColorMatrix matrixGray = new ColorMatrix(new float[][]
         {
             new float[] { -.2126f, -.2126f, -.2126f, 0, 0 },
             new float[] { -.7152f, -.7152f, -.7152f, 0, 0 },
@@ -129,13 +135,17 @@ namespace DemoMap
             return !(end < now && now < start);
         }
 
-        ColorMatrix matrixDefault;
+        readonly ColorMatrix matrixDefault;
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
             double lat = gMapControl.FromLocalToLatLng(e.X, e.Y).Lat;
             double lng = gMapControl.FromLocalToLatLng(e.X, e.Y).Lng;
             label2.Text = "Mouse coord Lat: " + lat + " Lng: " + lng;
+        }
+        private void OnMouseUp(object sender, MouseEventArgs e)
+        {
+            CacheMap();
         }
 
         private void OnMapDrag()
@@ -145,10 +155,40 @@ namespace DemoMap
         private void OnZoomChanged()
         {
             label3.Text = "Map Zoom: " + gMapControl.Zoom;
-            OnMapDrag();
+            CacheMap();
         }
 
-        private void labelHide_Click(object sender, EventArgs e)
+        private void CacheMap()
+        {
+            if (gMapControl != null)
+            {
+                var area = gMapControl.ViewArea;
+                var zoom = gMapControl.Zoom;
+                MapCacheForm objForm = new MapCacheForm
+                {
+                    Location = new Point(0, 0),
+                    Name = "Prefetching Tiles",
+                    ShowCompleteMessage = false
+                };
+
+                //this.IsMdiContainer = true;
+                //objForm.TopLevel = false;
+                //panel2.Controls.Add(objForm);
+                //objForm.FormBorderStyle = FormBorderStyle.None;
+                //objForm.Dock = DockStyle.Fill;
+                //panel2.Show();
+                //objForm.Show();
+                //objForm.OnFinish += () => {
+                //    panel2.Hide();
+                //    objForm.Close();
+                //    panel2.Controls.Clear();
+                //};
+
+                objForm.Start(area, (int)zoom, gMapControl.MapProvider, 100, 1);
+            }
+        }
+
+        private void LabelHide_Click(object sender, EventArgs e)
         {
             _panel = !_panel;
             if (_panel)
@@ -175,7 +215,7 @@ namespace DemoMap
             panel1.Height = 18;
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             listBox1.Enabled = false;
             gMapControl.Enabled = false;
@@ -184,19 +224,19 @@ namespace DemoMap
             listBox1.Enabled = true;
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start(_url);
         }
 
-        private void comboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             comboBox.Enabled = false;
             gMapControl.MapProvider = GMapProviders.List[comboBox.SelectedIndex];
             comboBox.Enabled = true;
         }
 
-        private void nightButton_Click(object sender, EventArgs e)
+        private void NightButton_Click(object sender, EventArgs e)
         {
             _isNightMode = !_isNightMode;
             SetMode(_isNightMode);
@@ -222,13 +262,18 @@ namespace DemoMap
             _loader.Hide();
         }
 
-        private void buttonUpdate_Click(object sender, EventArgs e)
+        private void ButtonUpdate_Click(object sender, EventArgs e)
         {
             listBox1.Enabled = false;
             gMapControl.Enabled = false;
             DrawSource(_dataProvider.Providers[listBox1.SelectedIndex], true);
             gMapControl.Enabled = true;
             listBox1.Enabled = true;
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            panel2.Controls.Clear();
         }
     }
 }

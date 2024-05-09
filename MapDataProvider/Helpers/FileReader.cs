@@ -6,11 +6,11 @@ using MapDataProvider.Models;
 
 namespace MapDataProvider.Helpers
 {
-    internal static class FileReader
+    public static class FileReader
     {
         private static readonly string _configFile = "source.config.json";
         private static string _assemblyDirectoryBuf;
-        internal static string AssemblyDirectory
+        public static string AssemblyDirectory
         {
             get
             {
