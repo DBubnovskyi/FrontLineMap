@@ -34,7 +34,7 @@ namespace MapDataProvider.DataSourceProviders.Providers
             {
                 try
                 {
-                    var json = WebLoader.Load(ApiUrls.First());
+                    string json = WebLoader.Load(ApiUrls.First(), WebSite);
                     res = Converter.DeserializeMapData(json);
                 }
                 catch (Exception ex)

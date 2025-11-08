@@ -27,6 +27,11 @@ namespace MapDataProvider.DataConverters
             };
             foreach (var itemTop in elements)
             {
+                if (itemTop == null)
+                {
+                    continue;
+                }
+
                 int fillOpacity = (int)(255.0 * itemTop.Style.FillOpacity ?? 1);
                 Color fillColor = ColorTranslator.FromHtml(itemTop.Style.FillColor);
                 var fill = new SolidBrush(Color.FromArgb(fillOpacity, fillColor));

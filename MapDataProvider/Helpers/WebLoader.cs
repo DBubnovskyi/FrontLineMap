@@ -14,12 +14,12 @@ namespace MapDataProvider.Helpers
         private readonly static string _userAgent = 
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like " +
             "Gecko) Chrome/15.0.874.121 Safari/535.2";
-        public static string Load(string url)
+        public static string Load(string url, string webSite)
         {
-            return LoadAsync(url).Result;
+            return LoadAsync(url, webSite).Result;
         }
 
-        public async static Task<string> LoadAsync(string url)
+        public async static Task<string> LoadAsync(string url, string webSite)
         {
             string responseInfo;
             using  (var client = new HttpClient()) {
@@ -30,6 +30,10 @@ namespace MapDataProvider.Helpers
                     RequestUri = new Uri(url),
                     
                 };
+
+                request.Headers.Add("Origin", webSite);
+                request.Headers.Add("Referer", webSite);
+
                 var response = await client.SendAsync(request).ConfigureAwait(false);
                 responseInfo = await response.Content.ReadAsStringAsync();
             };

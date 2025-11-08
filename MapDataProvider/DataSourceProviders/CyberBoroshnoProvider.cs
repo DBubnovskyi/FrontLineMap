@@ -26,7 +26,7 @@ namespace MapDataProvider.DataSourceProviders.Providers
                 {
                     try
                     {
-                        var json = WebLoader.Load(AddTimeToUrl(url));
+                        var json = WebLoader.Load(AddTimeToUrl(url), WebSite);
                         var data = Converter.DeserializeMapData(json);
 
                         Color color = ColorTranslator.FromHtml("#ff5252");

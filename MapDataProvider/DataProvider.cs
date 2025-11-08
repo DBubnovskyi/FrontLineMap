@@ -54,12 +54,19 @@ namespace MapDataProvider
                         case "SaveEcoBot":
                             _providers.Add(new SaveEcoBotProvider(new SaveEcoBotConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
+
+                        /*
+                        // Сайт більше не існує
                         case "CyberBoroshno":
                             _providers.Add(new CyberBoroshnoProvider(new CyberBoroshnoConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
+                        */
+                        /*
+                        // Дані не оновлюються
                         case "LiveMap":
                             _providers.Add(new LiveMapProvider(new LiveMapConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
+                        */
                         case "Noelreports":
                             _providers.Add(new NoelreportsProvider(new NoelreportsConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
