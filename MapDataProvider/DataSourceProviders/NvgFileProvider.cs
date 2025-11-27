@@ -17,6 +17,7 @@ namespace MapDataProvider.DataSourceProviders.Providers
     {
         private readonly NvgConverter _converter;
         private string _lastLoadedFilePath;
+        private bool _fileSelectionCancelled = false;
 
         public NvgFileProvider(NvgConverter converter, string name, string webSite)
         {
@@ -43,6 +44,19 @@ namespace MapDataProvider.DataSourceProviders.Providers
                 return Task.FromResult(res);
             }
 
+            // Перевіряємо, чи користувач уже відмінив вибір файлу раніше
+            if (_fileSelectionCancelled && !reloadData)
+            {
+                if (hasCachedData)
+                {
+                    res = CacheHandler.LoadFromCache(Name);
+                    return Task.FromResult(res);
+                }
+
+                res.Metadata.Errors.Add(new Exception("File selection cancelled and no cached data available"));
+                return Task.FromResult(res);
+            }
+
             // Відкриваємо діалог для вибору файлу
             try
             {
@@ -51,7 +65,10 @@ namespace MapDataProvider.DataSourceProviders.Providers
 
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    // User cancelled file selection, try to load from cache
+                    // User cancelled file selection, mark it to prevent repeated dialogs
+                    _fileSelectionCancelled = true;
+                    
+                    // Try to load from cache
                     if (hasCachedData)
                     {
                         res = CacheHandler.LoadFromCache(Name);
@@ -63,6 +80,7 @@ namespace MapDataProvider.DataSourceProviders.Providers
                 }
 
                 _lastLoadedFilePath = filePath;
+                _fileSelectionCancelled = false; // Reset the flag on successful file selection
 
                 // Read file content
                 string xmlContent = File.ReadAllText(filePath);
