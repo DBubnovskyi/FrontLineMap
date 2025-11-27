@@ -39,6 +39,11 @@
       "api-url": [
         "https://widgets.scribblemaps.com/api/maps/tSdwStv0Ap/smjsonLocal"
       ]
+    },
+    {
+      "name": "Delta - nvg file",
+      "web-site": "Local File System",
+      "api-url": []
     }
   ]
 }

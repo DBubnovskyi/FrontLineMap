@@ -70,6 +70,9 @@ namespace MapDataProvider
                         case "Noelreports":
                             _providers.Add(new NoelreportsProvider(new NoelreportsConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
+                        case "Delta - nvg file":
+                            _providers.Add(new NvgFileProvider(new NvgConverter(), item.Name, item.WebSite));
+                            break;
                         default: break;
                     }
                 }

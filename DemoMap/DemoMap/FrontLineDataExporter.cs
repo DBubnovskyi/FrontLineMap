@@ -82,7 +82,15 @@ namespace DemoMap
             var writer = new BinaryWriter(fs, Encoding.UTF8, false);
             writer.Write(iDate);
             writer.Write(iTime);
-            foreach (var polygon in result.Polygons)
+
+            // Конвертуємо лінії в полігони для експорту
+            var allPolygons = new List<Polygon>(result.Polygons);
+            foreach (var line in result.Lines)
+            {
+                allPolygons.Add(ConvertLineToPolygon(line));
+            }
+
+            foreach (var polygon in allPolygons)
             {
                 iType = 0;
                 if (polygon.Name.Contains("невідомий"))
@@ -111,6 +119,32 @@ namespace DemoMap
             }
 
             fs?.Close();
+        }
+
+        /// <summary>
+        /// Конвертує лінію в полігон шляхом дублювання точок у зворотному порядку
+        /// </summary>
+        private static Polygon ConvertLineToPolygon(Line line)
+        {
+            var polygon = new Polygon
+            {
+                Name = line.Name,
+                Style = line.Style
+            };
+
+            // Додаємо точки в прямому порядку
+            foreach (var point in line.Points)
+            {
+                polygon.Points.Add(point);
+            }
+
+            // Додаємо точки в зворотному порядку (крім останньої, щоб не дублювати)
+            for (int i = line.Points.Count - 2; i >= 0; i--)
+            {
+                polygon.Points.Add(line.Points[i]);
+            }
+
+            return polygon;
         }
 
         /// <summary>

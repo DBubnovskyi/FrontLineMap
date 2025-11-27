@@ -18,14 +18,22 @@ namespace MapDataProvider.Models.MapElement
         public MyPen(Color color, float width, float[] dash)
         {
             Color = color;
-            Width = width; 
+            Width = width;
             DashPattern = dash;
         }
         public MyPen(Pen pen)
         {
             Color = pen.Color;
             Width = pen.Width;
-            DashPattern = pen.DashPattern;
+            try
+            {
+                DashPattern = pen.DashPattern ?? new float[] { 1 };
+            }
+            catch
+            {
+                // Якщо не вдається отримати DashPattern, використовуємо суцільну лінію
+                DashPattern = new float[] { 1 };
+            }
         }
         [JsonProperty("color")]
         public Color Color { get; set; }
