@@ -57,8 +57,8 @@ namespace DemoMap
 
             ShowPanel();
 
-            comboBox.DataSource = GMapProviders.List;
-            comboBox.SelectedIndex = 4;
+            //comboBox.DataSource = GMapProviders.List;
+            //comboBox.SelectedIndex = 4;
 
             listBox1.Items.AddRange(_dataProvider.Providers.Select(x => (object)x.Name).ToArray());
             //listBox1.SelectedIndex = 0;
@@ -69,7 +69,7 @@ namespace DemoMap
         private void DrawSource(IDataProvider source, bool isForce = false)
         {
             _result = source.GetDataAsync(isForce).Result;
-            labelErr.Text = _result.Metadata.Errors.Count > 0 ? "Error occurred" : string.Empty;
+            //labelErr.Text = _result.Metadata.Errors.Count > 0 ? "Error occurred" : string.Empty;
             _polyOverlay.Clear();
             gMapControl.Overlays.Clear();
             foreach (var polygon in _result.Polygons)
@@ -96,22 +96,22 @@ namespace DemoMap
 
                 _polyOverlay.Polygons.Add(gPolygon);
             }
-            //foreach (var line in _result.Lines)
-            //{
-            //    List<PointLatLng> points = new List<PointLatLng>();
-            //    foreach (var point in line.Points)
-            //    {
-            //        points.Add(new PointLatLng(point.Lat, point.Lng));
-            //    }
-            //    GMapRoute gMapRoute = new GMapRoute(points, line.Name);
-            //    gMapRoute.Stroke = line.Style.Stroke;
+            foreach (var line in _result.Lines)
+            {
+                List<PointLatLng> points = new List<PointLatLng>();
+                foreach (var point in line.Points)
+                {
+                    points.Add(new PointLatLng(point.Lat, point.Lng));
+                }
+                GMapRoute gMapRoute = new GMapRoute(points, line.Name);
+                gMapRoute.Stroke = line.Style.Stroke;
 
-            //    _polyOverlay.Routes.Add(gMapRoute);
-            //}
-            linkLabel1.Text = source.WebSite.Length < 26 ? source.WebSite : source.WebSite.Substring(0, 23);
-            labelLastUpdate.Text = _result.Metadata.LastUpdated != null ? _result.Metadata.LastUpdated.Value.ToString("dd.MM.yyyy  -  HH:mm:ss") : " ";
-            labelDataSource.Text = _result.Metadata.ActualSource == MapDataProvider.Models.Metadata.ActualLoadSource.LocalFile ?
-                "завантажено з кешу" : "завантажено з інтернету";
+                _polyOverlay.Routes.Add(gMapRoute);
+            }
+            //linkLabel1.Text = source.WebSite.Length < 26 ? source.WebSite : source.WebSite.Substring(0, 23);
+            //labelLastUpdate.Text = _result.Metadata.LastUpdated != null ? _result.Metadata.LastUpdated.Value.ToString("dd.MM.yyyy  -  HH:mm:ss") : " ";
+            //labelDataSource.Text = _result.Metadata.ActualSource == MapDataProvider.Models.Metadata.ActualLoadSource.LocalFile ?
+            //"завантажено з кешу" : "завантажено з інтернету";
             _url = source.WebSite;
             gMapControl.Overlays.Add(_polyOverlay);
         }
@@ -193,6 +193,8 @@ namespace DemoMap
             DrawSource(_dataProvider.Providers[listBox1.SelectedIndex]);
             gMapControl.Enabled = true;
             listBox1.Enabled = true;
+
+            buttonUpdate_Click(new { }, EventArgs.Empty);
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -202,9 +204,9 @@ namespace DemoMap
 
         private void comboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            comboBox.Enabled = false;
-            gMapControl.MapProvider = GMapProviders.List[comboBox.SelectedIndex];
-            comboBox.Enabled = true;
+            //comboBox.Enabled = false;
+            //gMapControl.MapProvider = GMapProviders.List[comboBox.SelectedIndex];
+            //comboBox.Enabled = true;
         }
 
         private void nightButton_Click(object sender, EventArgs e)
