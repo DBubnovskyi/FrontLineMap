@@ -1,16 +1,7 @@
 {
   "sources": [
     {
-      "name": "DeepState",
-      "web-site": "https://deepstatemap.live",
-      "api-url": [
-        "https://deepstatemap.live/api/history/{timestamp}/geojson",
-        "https://deepstatemap.live/api/history/public",
-        "https://deepstatemap.live/api/history/last.geojson"
-      ]
-    },
-    {
-      "name": "SaveEcoBot",
+      "name": "SaveEcoBot(ISW)",
       "web-site": "https://www.saveecobot.com/fire-maps#6/48.879/31.113/none/ara+arc+cuc+crc",
       "api-url": [
         "https://www.saveecobot.com/storage/polygons/polygon_isw_territories.json"
@@ -38,6 +29,15 @@
       "web-site": "https://noelreports.com/",
       "api-url": [
         "https://widgets.scribblemaps.com/api/maps/tSdwStv0Ap/smjsonLocal"
+      ]
+    },
+    {
+      "name": "DeepState",
+      "web-site": "https://deepstatemap.live",
+      "api-url": [
+        "https://deepstatemap.live/api/history/{timestamp}/geojson",
+        "https://deepstatemap.live/api/history/public",
+        "https://deepstatemap.live/api/history/last.geojson"
       ]
     },
     {

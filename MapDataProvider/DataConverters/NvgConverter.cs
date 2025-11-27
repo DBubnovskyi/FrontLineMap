@@ -31,14 +31,27 @@ namespace MapDataProvider.DataConverters
             {
                 var doc = XDocument.Parse(xmlInput);
 
+                int polygonsParsed = 0;
+                int polylinesParsed = 0;
+
                 // Parse polygons
                 var polygons = doc.Descendants(ns2 + "polygon");
                 foreach (var poly in polygons)
                 {
-                    var polygon = ParsePolygon(poly);
-                    if (polygon != null)
+                    try
                     {
-                        result.Polygons.Add(polygon);
+                        var polygon = ParsePolygon(poly);
+                        if (polygon != null)
+                        {
+                            result.Polygons.Add(polygon);
+                            polygonsParsed++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log individual polygon parsing errors but continue processing
+                        System.Diagnostics.Debug.WriteLine($"Error parsing polygon: {ex.Message}");
+                        result.Metadata.Errors.Add(new Exception($"Error parsing polygon: {ex.Message}", ex));
                     }
                 }
 
@@ -46,12 +59,25 @@ namespace MapDataProvider.DataConverters
                 var polylines = doc.Descendants(ns2 + "polyline");
                 foreach (var polyline in polylines)
                 {
-                    var line = ParsePolyline(polyline);
-                    if (line != null)
+                    try
                     {
-                        result.Lines.Add(line);
+                        var line = ParsePolyline(polyline);
+                        if (line != null)
+                        {
+                            result.Lines.Add(line);
+                            polylinesParsed++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log individual polyline parsing errors but continue processing
+                        System.Diagnostics.Debug.WriteLine($"Error parsing polyline: {ex.Message}");
+                        result.Metadata.Errors.Add(new Exception($"Error parsing polyline: {ex.Message}", ex));
                     }
                 }
+
+                // Log parsing statistics
+                System.Diagnostics.Debug.WriteLine($"NVG parsing completed: {polygonsParsed} polygons, {polylinesParsed} polylines");
             }
             catch (Exception ex)
             {
@@ -224,15 +250,20 @@ namespace MapDataProvider.DataConverters
                     var coords = pairs[i].Split(',');
                     if (coords.Length >= 2)
                     {
-                        if (double.TryParse(coords[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double lng) &&
-                            double.TryParse(coords[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double lat))
+                        // Improved floating point parsing with multiple culture attempts
+                        if (TryParseCoordinate(coords[0], out double lng) &&
+                            TryParseCoordinate(coords[1], out double lat))
                         {
-                            result.Add(new PointLatLng
+                            // Validate coordinate ranges
+                            if (IsValidLatitude(lat) && IsValidLongitude(lng))
                             {
-                                Lng = lng,
-                                Lat = lat,
-                                Height = 0
-                            });
+                                result.Add(new PointLatLng
+                                {
+                                    Lng = lng,
+                                    Lat = lat,
+                                    Height = 0
+                                });
+                            }
                         }
                     }
                 }
@@ -242,14 +273,17 @@ namespace MapDataProvider.DataConverters
                 {
                     var lastCoords = pairs[pairs.Length - 1].Split(',');
                     if (lastCoords.Length >= 2 &&
-                        double.TryParse(lastCoords[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double lastLng) &&
-                        double.TryParse(lastCoords[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double lastLat))
+                        TryParseCoordinate(lastCoords[0], out double lastLng) &&
+                        TryParseCoordinate(lastCoords[1], out double lastLat))
                     {
-                        var lastPoint = new PointLatLng { Lng = lastLng, Lat = lastLat, Height = 0 };
-                        // Додаємо тільки якщо це не дублікат
-                        if (result[result.Count - 1].Lng != lastLng || result[result.Count - 1].Lat != lastLat)
+                        if (IsValidLatitude(lastLat) && IsValidLongitude(lastLng))
                         {
-                            result.Add(lastPoint);
+                            var lastPoint = new PointLatLng { Lng = lastLng, Lat = lastLat, Height = 0 };
+                            // Додаємо тільки якщо це не дублікат
+                            if (result[result.Count - 1].Lng != lastLng || result[result.Count - 1].Lat != lastLat)
+                            {
+                                result.Add(lastPoint);
+                            }
                         }
                     }
                 }
@@ -267,8 +301,10 @@ namespace MapDataProvider.DataConverters
                 // Повертаємо порожній список при нестачі пам'яті
                 return new List<PointLatLng>();
             }
-            catch
+            catch (Exception ex)
             {
+                // Log the specific error for debugging
+                System.Diagnostics.Debug.WriteLine($"Error parsing points: {ex.Message}. Points string: {pointsString?.Substring(0, Math.Min(100, pointsString.Length))}...");
                 return new List<PointLatLng>();
             }
         }
@@ -422,12 +458,14 @@ namespace MapDataProvider.DataConverters
                             var fillColorHtml = styles["fill"];
                             var color = ColorTranslator.FromHtml(fillColorHtml);
 
-                            // Parse fill-opacity
+                            // Parse fill-opacity with improved float parsing
                             float opacity = 0.25f;
-                            if (styles.ContainsKey("fill-opacity") &&
-                                float.TryParse(styles["fill-opacity"], NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedOpacity))
+                            if (styles.ContainsKey("fill-opacity"))
                             {
-                                opacity = parsedOpacity;
+                                if (TryParseFloat(styles["fill-opacity"], out float parsedOpacity))
+                                {
+                                    opacity = Math.Max(0f, Math.Min(1f, parsedOpacity)); // Clamp to valid range
+                                }
                             }
 
                             fillColor = Color.FromArgb((int)(opacity * 255), color);
@@ -451,11 +489,13 @@ namespace MapDataProvider.DataConverters
                         }
                     }
 
-                    // Parse stroke width
-                    if (styles.ContainsKey("stroke-width") &&
-                        float.TryParse(styles["stroke-width"], NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedWidth))
+                    // Parse stroke width with improved float parsing
+                    if (styles.ContainsKey("stroke-width"))
                     {
-                        strokeWidth = parsedWidth;
+                        if (TryParseFloat(styles["stroke-width"], out float parsedWidth))
+                        {
+                            strokeWidth = Math.Max(0.1f, parsedWidth); // Ensure positive width
+                        }
                     }
                 }
 
@@ -470,8 +510,9 @@ namespace MapDataProvider.DataConverters
                 // Повертаємо простий стиль при OutOfMemory
                 return GetDefaultStyle();
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Error parsing style: {ex.Message}. Style string: {styleString}");
                 // Повертаємо простий стиль при будь-яких інших помилках
                 return GetDefaultStyle();
             }
@@ -490,6 +531,105 @@ namespace MapDataProvider.DataConverters
                 Fill = new SolidBrush(fillColor),
                 Stroke = new Pen(strokeColor, 2f) { DashPattern = new float[] { 1 } }
             };
+        }
+
+        /// <summary>
+        /// Tries to parse coordinate value with multiple culture attempts
+        /// </summary>
+        private bool TryParseCoordinate(string value, out double result)
+        {
+            result = 0;
+            
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            value = value.Trim();
+
+            // First try with invariant culture
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+                return true;
+
+            // Try with current culture
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.CurrentCulture, out result))
+                return true;
+
+            // Try replacing common decimal separators
+            string normalizedValue = value.Replace(',', '.');
+            if (double.TryParse(normalizedValue, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+                return true;
+
+            // Try with dot as decimal separator
+            normalizedValue = value.Replace('.', ',');
+            if (double.TryParse(normalizedValue, NumberStyles.Float, CultureInfo.CurrentCulture, out result))
+                return true;
+
+            // Try to handle scientific notation or other special formats
+            try
+            {
+                result = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+                return true;
+            }
+            catch
+            {
+                try
+                {
+                    result = Convert.ToDouble(value, CultureInfo.CurrentCulture);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tries to parse float value with multiple culture attempts
+        /// </summary>
+        private bool TryParseFloat(string value, out float result)
+        {
+            result = 0f;
+            
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            value = value.Trim();
+
+            // First try with invariant culture
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+                return true;
+
+            // Try with current culture
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.CurrentCulture, out result))
+                return true;
+
+            // Try replacing common decimal separators
+            string normalizedValue = value.Replace(',', '.');
+            if (float.TryParse(normalizedValue, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+                return true;
+
+            // Try with dot as decimal separator
+            normalizedValue = value.Replace('.', ',');
+            if (float.TryParse(normalizedValue, NumberStyles.Float, CultureInfo.CurrentCulture, out result))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Validates latitude value
+        /// </summary>
+        private bool IsValidLatitude(double lat)
+        {
+            return lat >= -90.0 && lat <= 90.0 && !double.IsNaN(lat) && !double.IsInfinity(lat);
+        }
+
+        /// <summary>
+        /// Validates longitude value
+        /// </summary>
+        private bool IsValidLongitude(double lng)
+        {
+            return lng >= -180.0 && lng <= 180.0 && !double.IsNaN(lng) && !double.IsInfinity(lng);
         }
     }
 }

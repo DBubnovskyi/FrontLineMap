@@ -190,11 +190,14 @@ namespace DemoMap
         {
             listBox1.Enabled = false;
             gMapControl.Enabled = false;
+            listBox1.Enabled = false;
+            gMapControl.Enabled = false;
             DrawSource(_dataProvider.Providers[listBox1.SelectedIndex]);
+            DrawSource(_dataProvider.Providers[listBox1.SelectedIndex], true);
             gMapControl.Enabled = true;
             listBox1.Enabled = true;
-
-            buttonUpdate_Click(new { }, EventArgs.Empty);
+            gMapControl.Enabled = true;
+            listBox1.Enabled = true;
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

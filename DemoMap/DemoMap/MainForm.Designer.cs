@@ -31,13 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.gMapControl = new GMap.NET.WindowsForms.GMapControl();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.buttonSave = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.labelHide = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.nightButton = new System.Windows.Forms.Button();
-            this.buttonSave = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,6 +79,18 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(223, 153);
             this.panel1.TabIndex = 1;
+            // 
+            // buttonSave
+            // 
+            this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonSave.Location = new System.Drawing.Point(6, 119);
+            this.buttonSave.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(211, 24);
+            this.buttonSave.TabIndex = 6;
+            this.buttonSave.Text = "Зберегти ЛБЗ для Діаграми";
+            this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
             // listBox1
             // 
@@ -146,18 +158,6 @@
             this.nightButton.Text = "нічник";
             this.nightButton.UseVisualStyleBackColor = true;
             this.nightButton.Click += new System.EventHandler(this.nightButton_Click);
-            // 
-            // buttonSave
-            // 
-            this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonSave.Location = new System.Drawing.Point(6, 119);
-            this.buttonSave.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonSave.Name = "buttonSave";
-            this.buttonSave.Size = new System.Drawing.Size(211, 24);
-            this.buttonSave.TabIndex = 6;
-            this.buttonSave.Text = "Зберегти ЛБЗ для Діаграми";
-            this.buttonSave.UseVisualStyleBackColor = true;
-            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
             // MainForm
             // 

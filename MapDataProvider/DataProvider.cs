@@ -48,11 +48,14 @@ namespace MapDataProvider
                 {
                     switch (item.Name)
                     {
+                        case "SaveEcoBot(ISW)":
+                            _providers.Add(new SaveEcoBotProvider(new SaveEcoBotConverter(), item.Name, item.WebSite, item.ApiUrls));
+                            break;
                         case "DeepState":
                             _providers.Add(new DeepStateProvider(new DeepStateConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
-                        case "SaveEcoBot":
-                            _providers.Add(new SaveEcoBotProvider(new SaveEcoBotConverter(), item.Name, item.WebSite, item.ApiUrls));
+                        case "Noelreports":
+                            _providers.Add(new NoelreportsProvider(new NoelreportsConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
 
                         /*
@@ -67,9 +70,6 @@ namespace MapDataProvider
                             _providers.Add(new LiveMapProvider(new LiveMapConverter(), item.Name, item.WebSite, item.ApiUrls));
                             break;
                         */
-                        case "Noelreports":
-                            _providers.Add(new NoelreportsProvider(new NoelreportsConverter(), item.Name, item.WebSite, item.ApiUrls));
-                            break;
                         case "Delta - nvg file":
                             _providers.Add(new NvgFileProvider(new NvgConverter(), item.Name, item.WebSite));
                             break;

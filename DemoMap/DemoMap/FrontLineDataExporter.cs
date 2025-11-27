@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Security.Principal;
 using System.Text;
@@ -77,7 +78,7 @@ namespace DemoMap
             iDate = iDate | (result.Metadata.LastUpdated.Value.Month << 16) | (result.Metadata.LastUpdated.Value.Day << 24);
 
             int iTime = result.Metadata.LastUpdated.Value.Hour;
-            iTime = iTime | (result.Metadata.LastUpdated.Value.Minute << 8);
+            iTime |= (result.Metadata.LastUpdated.Value.Minute << 8);
 
             var writer = new BinaryWriter(fs, Encoding.UTF8, false);
             writer.Write(iDate);
@@ -85,9 +86,12 @@ namespace DemoMap
 
             // Конвертуємо лінії в полігони для експорту
             var allPolygons = new List<Polygon>(result.Polygons);
-            foreach (var line in result.Lines)
-            {
-                allPolygons.Add(ConvertLineToPolygon(line));
+
+            if (result.Name.Contains("NVG File")) {
+                foreach (var line in result.Lines)
+                {
+                    allPolygons.Add(ConvertLineToPolygon(line));
+                }
             }
 
             foreach (var polygon in allPolygons)
@@ -102,7 +106,8 @@ namespace DemoMap
                     !polygon.Name.Contains("ОРДЛО") &&
                     !polygon.Name.Contains("Крим") &&
                     !polygon.Name.Contains("assessed_russian_advance") &&
-                    !polygon.Name.Contains("RU occupied"))
+                    !polygon.Name.Contains("RU occupied") &&
+                    !result.Name.Contains("NVG File"))
                 {
                     continue;
                 }
@@ -119,6 +124,10 @@ namespace DemoMap
             }
 
             fs?.Close();
+
+            // Показуємо системне сповіщення про успішне збереження
+            ShowNotification("Експорт завершено", 
+                $"Файл успішно збережено: {Path.GetFileName(path)}\nОброблено полігонів: {allPolygons.Count}");
         }
 
         /// <summary>
@@ -181,6 +190,36 @@ namespace DemoMap
             {
                 MessageBox.Show($"Не вдалося перезапустити програму з правами адміністратора: {ex.Message}",
                     "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Показує системне сповіщення
+        /// </summary>
+        private static void ShowNotification(string title, string message)
+        {
+            try
+            {
+                // Створюємо NotifyIcon для показу системного сповіщення
+                using (var notifyIcon = new NotifyIcon())
+                {
+                    notifyIcon.Icon = SystemIcons.Information;
+                    notifyIcon.BalloonTipTitle = title;
+                    notifyIcon.BalloonTipText = message;
+                    notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+                    notifyIcon.Visible = true;
+
+                    // Показуємо сповіщення
+                    notifyIcon.ShowBalloonTip(3000);
+
+                    // Чекаємо трохи, щоб сповіщення встигло показатися
+                    System.Threading.Thread.Sleep(500);
+                }
+            }
+            catch
+            {
+                // Fallback до MessageBox якщо системні сповіщення не працюють
+                MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }
