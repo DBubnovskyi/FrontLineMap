@@ -31,6 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.gMapControl = new GMap.NET.WindowsForms.GMapControl();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.labelDataSource = new System.Windows.Forms.Label();
+            this.labelLastUpdate = new System.Windows.Forms.Label();
+            this.buttonUpdate = new System.Windows.Forms.Button();
             this.labelErr = new System.Windows.Forms.Label();
             this.comboBox = new System.Windows.Forms.ComboBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -40,9 +43,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.nightButton = new System.Windows.Forms.Button();
-            this.buttonUpdate = new System.Windows.Forms.Button();
-            this.labelLastUpdate = new System.Windows.Forms.Label();
-            this.labelDataSource = new System.Windows.Forms.Label();
+            this.buttonSave = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,7 +57,7 @@
             this.gMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
             this.gMapControl.LevelsKeepInMemory = 5;
             this.gMapControl.Location = new System.Drawing.Point(0, 0);
-            this.gMapControl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gMapControl.Margin = new System.Windows.Forms.Padding(2);
             this.gMapControl.MarkersEnabled = true;
             this.gMapControl.MaxZoom = 2;
             this.gMapControl.MinZoom = 2;
@@ -85,10 +86,39 @@
             this.panel1.Controls.Add(this.linkLabel1);
             this.panel1.Controls.Add(this.labelHide);
             this.panel1.Location = new System.Drawing.Point(9, 10);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(146, 232);
             this.panel1.TabIndex = 1;
+            // 
+            // labelDataSource
+            // 
+            this.labelDataSource.AutoSize = true;
+            this.labelDataSource.Location = new System.Drawing.Point(2, 136);
+            this.labelDataSource.Name = "labelDataSource";
+            this.labelDataSource.Size = new System.Drawing.Size(35, 13);
+            this.labelDataSource.TabIndex = 6;
+            this.labelDataSource.Text = "label4";
+            // 
+            // labelLastUpdate
+            // 
+            this.labelLastUpdate.AutoSize = true;
+            this.labelLastUpdate.Location = new System.Drawing.Point(2, 122);
+            this.labelLastUpdate.Name = "labelLastUpdate";
+            this.labelLastUpdate.Size = new System.Drawing.Size(35, 13);
+            this.labelLastUpdate.TabIndex = 5;
+            this.labelLastUpdate.Text = "label4";
+            // 
+            // buttonUpdate
+            // 
+            this.buttonUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonUpdate.Location = new System.Drawing.Point(5, 176);
+            this.buttonUpdate.Name = "buttonUpdate";
+            this.buttonUpdate.Size = new System.Drawing.Size(136, 23);
+            this.buttonUpdate.TabIndex = 4;
+            this.buttonUpdate.Text = "Оновити з сервера";
+            this.buttonUpdate.UseVisualStyleBackColor = true;
+            this.buttonUpdate.Click += new System.EventHandler(this.buttonUpdate_Click);
             // 
             // labelErr
             // 
@@ -106,7 +136,7 @@
             this.comboBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox.Location = new System.Drawing.Point(5, 204);
-            this.comboBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox.Name = "comboBox";
             this.comboBox.Size = new System.Drawing.Size(136, 21);
             this.comboBox.TabIndex = 2;
@@ -117,7 +147,7 @@
             this.listBox1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(5, 19);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.listBox1.Margin = new System.Windows.Forms.Padding(2);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(136, 82);
             this.listBox1.TabIndex = 1;
@@ -183,7 +213,7 @@
             // 
             this.nightButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.nightButton.Location = new System.Drawing.Point(162, 51);
-            this.nightButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nightButton.Margin = new System.Windows.Forms.Padding(2);
             this.nightButton.Name = "nightButton";
             this.nightButton.Size = new System.Drawing.Size(50, 24);
             this.nightButton.TabIndex = 5;
@@ -191,40 +221,24 @@
             this.nightButton.UseVisualStyleBackColor = true;
             this.nightButton.Click += new System.EventHandler(this.nightButton_Click);
             // 
-            // buttonUpdate
+            // buttonSave
             // 
-            this.buttonUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonUpdate.Location = new System.Drawing.Point(5, 176);
-            this.buttonUpdate.Name = "buttonUpdate";
-            this.buttonUpdate.Size = new System.Drawing.Size(136, 23);
-            this.buttonUpdate.TabIndex = 4;
-            this.buttonUpdate.Text = "Оновити з сервера";
-            this.buttonUpdate.UseVisualStyleBackColor = true;
-            this.buttonUpdate.Click += new System.EventHandler(this.buttonUpdate_Click);
-            // 
-            // labelLastUpdate
-            // 
-            this.labelLastUpdate.AutoSize = true;
-            this.labelLastUpdate.Location = new System.Drawing.Point(2, 122);
-            this.labelLastUpdate.Name = "labelLastUpdate";
-            this.labelLastUpdate.Size = new System.Drawing.Size(35, 13);
-            this.labelLastUpdate.TabIndex = 5;
-            this.labelLastUpdate.Text = "label4";
-            // 
-            // labelDataSource
-            // 
-            this.labelDataSource.AutoSize = true;
-            this.labelDataSource.Location = new System.Drawing.Point(2, 136);
-            this.labelDataSource.Name = "labelDataSource";
-            this.labelDataSource.Size = new System.Drawing.Size(35, 13);
-            this.labelDataSource.TabIndex = 6;
-            this.labelDataSource.Text = "label4";
+            this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonSave.Location = new System.Drawing.Point(216, 51);
+            this.buttonSave.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(98, 24);
+            this.buttonSave.TabIndex = 6;
+            this.buttonSave.Text = "Зберегти ЛБЗ";
+            this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(662, 368);
+            this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.nightButton);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -232,7 +246,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.gMapControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Demo Map";
@@ -260,6 +274,7 @@
         private System.Windows.Forms.Label labelDataSource;
         private System.Windows.Forms.Label labelLastUpdate;
         private System.Windows.Forms.Button buttonUpdate;
+        private System.Windows.Forms.Button buttonSave;
     }
 }
 

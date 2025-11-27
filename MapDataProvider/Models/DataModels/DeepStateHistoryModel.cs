@@ -26,5 +26,4 @@ namespace MapDataProvider.DataSourceProviders.Models.DeepState
         [JsonProperty("createdAt")]
         public DateTime CreatedAt { get; set; }
     }
-
 }

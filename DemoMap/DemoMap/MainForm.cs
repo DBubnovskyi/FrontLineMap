@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using MapDataProvider.DataSourceProviders.Contracts;
 using System.Threading.Tasks;
+using MapDataProvider.Models;
 
 namespace DemoMap
 {
@@ -22,6 +23,7 @@ namespace DemoMap
         string _url = string.Empty;
         DataProvider _dataProvider = new DataProvider();
         LoadingForm _loader = new LoadingForm();
+        MapDataCollection _result;
 
         GMapOverlay _polyOverlay = new GMapOverlay("polygons");
         public MainForm()
@@ -53,7 +55,7 @@ namespace DemoMap
             _panelSize.Width = panel1.Width;
             _panelSize.Height = panel1.Height;
 
-            HidePanel();
+            ShowPanel();
 
             comboBox.DataSource = GMapProviders.List;
             comboBox.SelectedIndex = 4;
@@ -66,12 +68,21 @@ namespace DemoMap
 
         private void DrawSource(IDataProvider source, bool isForce = false)
         {
-            var result = source.GetDataAsync(isForce).Result;
-            labelErr.Text = result.Metadata.Errors.Count > 0 ? "Error occurred" : string.Empty;
+            _result = source.GetDataAsync(isForce).Result;
+            labelErr.Text = _result.Metadata.Errors.Count > 0 ? "Error occurred" : string.Empty;
             _polyOverlay.Clear();
             gMapControl.Overlays.Clear();
-            foreach (var polygon in result.Polygons)
+            foreach (var polygon in _result.Polygons)
             {
+                if (
+                    !polygon.Name.Contains("Окуповано") &&
+                    !polygon.Name.Contains("ОРДЛО") &&
+                    !polygon.Name.Contains("Крим") &&
+                    !polygon.Name.Contains("assessed_russian_advance") &&
+                    !polygon.Name.Contains("RU occupied"))
+                {
+                    //continue;
+                }
                 List<PointLatLng> points = new List<PointLatLng>();
                 foreach (var point in polygon.Points)
                 {
@@ -85,21 +96,21 @@ namespace DemoMap
 
                 _polyOverlay.Polygons.Add(gPolygon);
             }
-            foreach (var line in result.Lines)
-            {
-                List<PointLatLng> points = new List<PointLatLng>();
-                foreach (var point in line.Points)
-                {
-                    points.Add(new PointLatLng(point.Lat, point.Lng));
-                }
-                GMapRoute gMapRoute = new GMapRoute(points, line.Name);
-                gMapRoute.Stroke = line.Style.Stroke;
+            //foreach (var line in _result.Lines)
+            //{
+            //    List<PointLatLng> points = new List<PointLatLng>();
+            //    foreach (var point in line.Points)
+            //    {
+            //        points.Add(new PointLatLng(point.Lat, point.Lng));
+            //    }
+            //    GMapRoute gMapRoute = new GMapRoute(points, line.Name);
+            //    gMapRoute.Stroke = line.Style.Stroke;
 
-                _polyOverlay.Routes.Add(gMapRoute);
-            }
+            //    _polyOverlay.Routes.Add(gMapRoute);
+            //}
             linkLabel1.Text = source.WebSite.Length < 26 ? source.WebSite : source.WebSite.Substring(0, 23);
-            labelLastUpdate.Text = result.Metadata.LastUpdated != null ? result.Metadata.LastUpdated.Value.ToString("dd.MM.yyyy  -  HH:mm:ss") : " ";
-            labelDataSource.Text = result.Metadata.ActualSource == MapDataProvider.Models.Metadata.ActualLoadSource.LocalFile ?
+            labelLastUpdate.Text = _result.Metadata.LastUpdated != null ? _result.Metadata.LastUpdated.Value.ToString("dd.MM.yyyy  -  HH:mm:ss") : " ";
+            labelDataSource.Text = _result.Metadata.ActualSource == MapDataProvider.Models.Metadata.ActualLoadSource.LocalFile ?
                 "завантажено з кешу" : "завантажено з інтернету";
             _url = source.WebSite;
             gMapControl.Overlays.Add(_polyOverlay);
@@ -229,6 +240,11 @@ namespace DemoMap
             DrawSource(_dataProvider.Providers[listBox1.SelectedIndex], true);
             gMapControl.Enabled = true;
             listBox1.Enabled = true;
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            FrontLineDataExporter.SaveFrontLineFromDeepState(_result);
         }
     }
 }
